@@ -18,5 +18,5 @@ public @interface CsvColumn {
     String type() default "String";
     
     // default the same with field name
-    String bindColumn() default "";
+    String name() default "";
 }

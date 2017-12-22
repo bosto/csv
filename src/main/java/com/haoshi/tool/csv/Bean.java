@@ -29,15 +29,16 @@ public class Bean<T> {
         List<Field> fields = Arrays.asList(array.get(0).getClass().getDeclaredFields()).stream()
             .filter(field -> field.isAnnotationPresent(CsvColumn.class)).collect(Collectors.toList());
         
-        // set accessiable
+        // set accessible
         fields.forEach(field -> {
             field.setAccessible(true);
         });
         
         // set header
         StringBuilder sb = new StringBuilder();
-        sb.append(fields.stream().map(field -> field.getName())
+        sb.append(fields.stream().map(field -> Tool.getBindColumn(field))
             .collect(Collectors.joining(COMMA)));
+        sb.append(ENTER);
         sb.append(
         array.stream().map(entity -> {
             String row = fields.stream().map((field) -> 

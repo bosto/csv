@@ -15,7 +15,7 @@ package com.haoshi.tool.csv;
  * </b></p>
  */
 public class Person {
-    @CsvColumn
+    @CsvColumn(name="test_name")
     private String name;
     @CsvColumn
     private String sex;

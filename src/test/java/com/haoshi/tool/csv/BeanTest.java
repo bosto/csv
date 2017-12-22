@@ -27,7 +27,7 @@ public class BeanTest {
             new FileReader(Csv.class.getResource("person.csv")
                 .getPath()));
         List<Person> persons = csv.into(Person.class);
-        String filePath = "C:\\Users\\43929293\\Desktop\\persons.csv";
+        String filePath = "/Users/bosto/contribute/persons.csv";
         Bean<Person> bean = new Bean<Person>(persons);
         bean.toCSV(filePath);
     }

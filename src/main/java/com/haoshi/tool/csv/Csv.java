@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class Csv<T> {
     private BufferedReader readFile;
     private HashMap<String, Integer> headerIndexMap = new HashMap<String, Integer>();
+    private HashMap<String, String> fieldColumnNameMap = new HashMap<String, String>();
     private AtomicInteger index = new AtomicInteger(0);
 
     public Csv(FileReader readFile) throws IOException {
@@ -26,11 +27,14 @@ public class Csv<T> {
         initHeaderIndexMap();
     }
 
+    
+    
     public List<T> into(Class<? extends T> type) throws Exception {
         ArrayList<T> array = new ArrayList<T>();
         List<Field> fields = Arrays.asList(type.getDeclaredFields());
         List<Field> fieldsFiltered = fields.stream()
-            .filter(field -> field.isAnnotationPresent(CsvColumn.class) && headerIndexMap.containsKey(field.getName()))
+            .filter(field -> field.isAnnotationPresent(CsvColumn.class) && 
+            		headerIndexMap.containsKey(getBindName(field)))
             .collect(Collectors.toList());
         String line = null;
         while ((line = readFile.readLine()) != null) {
@@ -41,7 +45,7 @@ public class Csv<T> {
                     field -> {
                         try {
                         field.setAccessible(true);
-                        field.set(instance, row[headerIndexMap.get(field.getName())]);
+                        field.set(instance, row[headerIndexMap.get(getBindName(field))]);
                         } catch (Exception e) {
                             try {
                                 throw e;
@@ -57,6 +61,15 @@ public class Csv<T> {
 
     }
 
+    public String getBindName(Field field) {
+    		String result = null;
+    		if (fieldColumnNameMap.get(field.getName()) == null) {
+    			fieldColumnNameMap.put(field.getName(), Tool.getBindColumn(field));
+    		}
+    		result = fieldColumnNameMap.get(field.getName());
+    		return result;	
+    }
+    
     public void initHeaderIndexMap() throws IOException {
         List<String> headers = Arrays.asList(readFile.readLine().split(","));
         headers.stream().forEach(header -> headerIndexMap.put(header, index.getAndAdd(1)));
